@@ -1,10 +1,21 @@
 import { Drawer } from "expo-router/drawer";
+import { SplashScreen } from "expo-router";
+import { useEffect } from "react";
 
-// Global Menu (drawer) available on every page. Child route files under
-// src/app/ become drawer items automatically — their `options.title` sets the
-// label. The menu's source of truth (and the canonical list used by tests) is
-// src/app/menu.ts; add a new Run-overview page by adding a route file here AND
-// an item in getMenuItems().
 export default function AppLayout() {
-  return <Drawer screenOptions={{ headerShown: true }} />;
+  useEffect(() => {
+    SplashScreen.hideAsync();
+  }, []);
+
+  return (
+    <Drawer screenOptions={{ headerShown: true }}>
+      <Drawer.Screen name="index" options={{ title: "Home" }} />
+      <Drawer.Screen name="dark-factory" options={{ title: "Dark Factory" }} />
+      <Drawer.Screen name="menu" options={{ drawerItemStyle: { display: "none" } }} />
+      <Drawer.Screen name="ChatScreen" options={{ drawerItemStyle: { display: "none" } }} />
+      <Drawer.Screen name="dark-factory/mockData" options={{ drawerItemStyle: { display: "none" } }} />
+    </Drawer>
+  );
 }
+
+
