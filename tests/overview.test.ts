@@ -1,5 +1,5 @@
-import { computeOutcomeMix, getTrendPoints, STATUS_ORDER } from '../src/app/dark-factory/overview';
-import { darkFactoryMock } from '../src/app/dark-factory/mockData';
+import { computeOutcomeMix, getTrendPoints, STATUS_ORDER } from '../src/dark-factory/overview';
+import { darkFactoryMock } from '../src/dark-factory/mockData';
 
 describe('computeOutcomeMix', () => {
   it('returns all four statuses with values from counts', () => {
