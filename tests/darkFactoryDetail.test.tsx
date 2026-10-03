@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react-native';
-import { RunDetailContent } from '../src/app/dark-factory/RunDetailContent';
+import { RunDetailContent } from '../src/dark-factory/RunDetailContent';
 
 describe('RunDetailContent', () => {
   it('renders mocked detail for a known run id', async () => {

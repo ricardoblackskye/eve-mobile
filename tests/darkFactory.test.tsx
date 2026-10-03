@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react-native';
 import { DarkFactoryScreen } from '../src/app/dark-factory';
-import { darkFactoryMock } from '../src/app/dark-factory/mockData';
+import { darkFactoryMock } from '../src/dark-factory/mockData';
 
 describe('DarkFactoryScreen', () => {
   it('renders the Factory Status heading + subheading', async () => {

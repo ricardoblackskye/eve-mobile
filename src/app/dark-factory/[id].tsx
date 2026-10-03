@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
-import { RunDetailContent } from './RunDetailContent';
+import { RunDetailContent } from '../../dark-factory/RunDetailContent';
 
 export const options = { title: 'Run Detail' };
 
