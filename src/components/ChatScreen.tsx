@@ -13,6 +13,10 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { buildEveHeaders, EVE_API_URL } from "../../config";
+import { Screen } from "./ui/Screen";
+import { colors } from "../theme/colors";
+import { fonts } from "../theme/typography";
+import { glowText } from "../theme/glow";
 
 const STATUS_LABEL: Record<string, string> = {
   ready: "Ready",
@@ -23,11 +27,11 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  ready: "#16a34a",
-  resuming: "#64748b",
-  submitted: "#d97706",
-  streaming: "#2563eb",
-  error: "#dc2626",
+  ready: colors.active,
+  resuming: colors.textMuted,
+  submitted: colors.blocked,
+  streaming: colors.accent,
+  error: colors.failed,
 };
 
 export default function ChatScreen() {
@@ -51,16 +55,21 @@ export default function ChatScreen() {
   const messages = agent.data.messages;
 
   return (
+    <Screen>
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
 
       <View style={styles.header}>
         <Text style={styles.title}>Eve Agent</Text>
         <Text
-          style={[styles.status, { color: STATUS_COLOR[agent.status] ?? "#64748b" }]}
+          style={[
+            styles.status,
+            { color: STATUS_COLOR[agent.status] ?? colors.textMuted },
+            glowText(STATUS_COLOR[agent.status] ?? colors.textMuted, 6),
+          ]}
         >
           {STATUS_LABEL[agent.status] ?? agent.status}
         </Text>
@@ -107,6 +116,7 @@ export default function ChatScreen() {
           testID="chat-input"
           style={styles.input}
           placeholder="Type your message…"
+          placeholderTextColor={colors.textMuted}
           value={input}
           onChangeText={setInput}
           editable={!isBusy}
@@ -130,13 +140,13 @@ export default function ChatScreen() {
         </Pressable>
       </View>
     </KeyboardAvoidingView>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
   header: {
     flexDirection: "row",
@@ -146,11 +156,12 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "#e5e7eb",
+    borderBottomColor: colors.border,
   },
   title: {
     fontSize: 18,
-    fontWeight: "600",
+    fontFamily: fonts.titleMedium,
+    color: colors.text,
   },
   status: {
     fontSize: 13,
@@ -161,8 +172,10 @@ const styles = StyleSheet.create({
     marginTop: 8,
     padding: 10,
     borderRadius: 8,
-    backgroundColor: "#fef2f2",
-    color: "#dc2626",
+    borderWidth: 1,
+    borderColor: colors.failed,
+    backgroundColor: "rgba(255, 77, 109, 0.12)",
+    color: colors.failed,
     fontSize: 13,
   },
   messages: {
@@ -173,52 +186,63 @@ const styles = StyleSheet.create({
   placeholder: {
     marginTop: 24,
     textAlign: "center",
-    color: "#9ca3af",
+    color: colors.textMuted,
   },
   message: {
     maxWidth: "85%",
     marginVertical: 6,
     padding: 10,
     borderRadius: 12,
+    borderWidth: 1,
   },
   msgUser: {
     alignSelf: "flex-end",
-    backgroundColor: "#2563eb",
+    backgroundColor: "rgba(123, 140, 255, 0.18)",
+    borderColor: colors.completed,
+    boxShadow: `0 0 10px ${colors.completed}55`,
   },
   msgAssistant: {
     alignSelf: "flex-start",
-    backgroundColor: "#f1f5f9",
+    backgroundColor: colors.surface,
+    borderColor: colors.active,
+    boxShadow: `0 0 10px ${colors.active}44`,
   },
   role: {
     fontSize: 11,
     fontWeight: "600",
     textTransform: "uppercase",
-    opacity: 0.6,
+    color: colors.textMuted,
     marginBottom: 4,
   },
   msgText: {
     fontSize: 15,
     lineHeight: 21,
+    color: colors.text,
   },
   composer: {
     flexDirection: "row",
     alignItems: "center",
     padding: 12,
     borderTopWidth: 1,
-    borderTopColor: "#e5e7eb",
+    borderTopColor: colors.border,
     gap: 8,
   },
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#d1d5db",
+    borderColor: colors.borderStrong,
+    backgroundColor: colors.surface,
+    color: colors.text,
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 8,
     fontSize: 15,
   },
   send: {
-    backgroundColor: "#2563eb",
+    backgroundColor: "rgba(56, 232, 255, 0.18)",
+    borderWidth: 1,
+    borderColor: colors.accent,
+    boxShadow: `0 0 12px ${colors.accent}66`,
     borderRadius: 20,
     paddingHorizontal: 18,
     paddingVertical: 10,
@@ -228,10 +252,11 @@ const styles = StyleSheet.create({
     height: 40,
   },
   sendDisabled: {
-    backgroundColor: "#93c5fd",
+    opacity: 0.4,
+    boxShadow: "none",
   },
   sendText: {
-    color: "#fff",
+    color: colors.accent,
     fontWeight: "600",
     fontSize: 15,
   },

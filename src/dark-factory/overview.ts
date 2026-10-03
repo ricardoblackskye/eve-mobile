@@ -1,13 +1,9 @@
 import { RunStatus } from './mockData';
+import { statusColors } from '../theme/colors';
 
 export const STATUS_ORDER: RunStatus[] = ['ACTIVE', 'BLOCKED', 'COMPLETED', 'FAILED'];
 
-export const STATUS_COLORS: Record<RunStatus, string> = {
-  ACTIVE: '#2a9d8f',
-  BLOCKED: '#e9c46a',
-  COMPLETED: '#264653',
-  FAILED: '#e76f51',
-};
+export const STATUS_COLORS: Record<RunStatus, string> = statusColors;
 
 export interface MixSlice {
   status: RunStatus;
