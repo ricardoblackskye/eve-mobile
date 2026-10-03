@@ -1,0 +1,5 @@
+# Smoke test: the app launches and shows the chat header.
+appId: com.ricardoblackskye.evemobile
+---
+- launchApp
+- assertVisible: "Eve Agent"

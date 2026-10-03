@@ -1,0 +1,37 @@
+name: CI
+
+# Runs on every PR (pre-merge gate) AND on every push to main
+# (post-merge re-verification of the merged result).
+#
+# NOTE: the slow E2E (Maestro / iOS-simulator) job lives in e2e.yml so it does
+# NOT gate every PR — it runs after merge to main and can be triggered manually.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Lint & typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+
+  test:
+    name: Unit & UI tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test

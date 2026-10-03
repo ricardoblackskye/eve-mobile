@@ -20,6 +20,7 @@ export type EveHeaders = Record<string, string>;
  * you can omit the key and leave this undefined.
  */
 export function buildEveHeaders(): EveHeaders | undefined {
-  if (!EVE_API_KEY) return undefined;
-  return { authorization: `Bearer ${EVE_API_KEY}` };
+  const key = process.env.EXPO_PUBLIC_EVE_API_KEY;
+  if (!key) return undefined;
+  return { authorization: `Bearer ${key}` };
 }

@@ -1,0 +1,3 @@
+flows:
+  - maestro/flows/launch.yaml
+  - maestro/flows/send_message.yaml

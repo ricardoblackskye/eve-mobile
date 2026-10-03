@@ -1,0 +1,34 @@
+name: E2E
+
+# E2E is the slow gate (it builds an iOS-simulator dev client, then runs Maestro).
+# It is intentionally NOT part of the per-PR CI: it runs after a merge to main
+# (post-merge re-verification) and can be triggered manually from the Actions tab
+# (workflow_dispatch), so pull requests stay fast.
+#
+# The `expo run:ios` step can block on the simulator-launch step on CI; if a run
+# hangs, cancel it and investigate that step (build + `xcrun simctl install`
+# without launching is the usual fix).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    name: E2E (Maestro, iOS simulator)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install Maestro
+        run: curl -Ls "https://get.maestro.mobile.dev" | bash
+      - name: Build & install dev client on iOS simulator
+        run: npx expo prebuild --platform ios && npx expo run:ios --configuration Debug
+      - name: Run Maestro flows
+        run: |
+          export PATH="$HOME/.maestro/bin:$PATH"
+          maestro test maestro/flows
