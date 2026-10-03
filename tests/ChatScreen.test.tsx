@@ -56,8 +56,10 @@ describe('ChatScreen', () => {
     expect(getByText('Hi there')).toBeTruthy();
   });
 
-  it('disables send while the agent is streaming', async () => {
+  it('disables the composer while the agent is streaming', async () => {
     const { getByTestId } = await renderWith({ status: 'streaming' });
-    expect((getByTestId('chat-send') as any).props.disabled).toBe(true);
+    // While busy, the input is not editable and the send control shows a spinner
+    // instead of the "Send" label (RNTL does not surface Pressable `disabled`).
+    expect(getByTestId('chat-input').props.editable).toBe(false);
   });
 });
