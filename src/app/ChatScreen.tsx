@@ -12,7 +12,7 @@ import {
   View,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { buildEveHeaders, EVE_API_URL } from "./config";
+import { buildEveHeaders, EVE_API_URL } from "../../config";
 
 const STATUS_LABEL: Record<string, string> = {
   ready: "Ready",
@@ -30,17 +30,16 @@ const STATUS_COLOR: Record<string, string> = {
   error: "#dc2626",
 };
 
-export default function App() {
+export default function ChatScreen() {
   // Reuses the same eve/react hook the web app uses. `host` is the proxy base;
-  // the hook appends `/eve/v1`, so `https://deploy/api` -> `/api/eve/v1/...`.
+  // the hook appends `/eve/v1`, so `https://<deploy>/api` -> `/api/eve/v1/...`.
   const agent = useEveAgent({
     host: EVE_API_URL || undefined,
     headers: buildEveHeaders(),
   });
 
   const [input, setInput] = useState("");
-  const isBusy =
-    agent.status === "submitted" || agent.status === "streaming";
+  const isBusy = agent.status === "submitted" || agent.status === "streaming";
 
   function onSubmit() {
     const text = input.trim();
@@ -105,6 +104,7 @@ export default function App() {
 
       <View style={styles.composer}>
         <TextInput
+          testID="chat-input"
           style={styles.input}
           placeholder="Type your message…"
           value={input}
@@ -114,6 +114,7 @@ export default function App() {
           returnKeyType="send"
         />
         <Pressable
+          testID="chat-send"
           style={[
             styles.send,
             isBusy || !input.trim() ? styles.sendDisabled : null,
