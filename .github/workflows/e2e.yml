@@ -1,13 +1,16 @@
 name: E2E
 
-# E2E is the slow gate (it builds an iOS-simulator dev client, then runs Maestro).
+# E2E is the slow gate (it builds an iOS-simulator app, then runs Maestro).
 # It is intentionally NOT part of the per-PR CI: it runs after a merge to main
 # (post-merge re-verification) and can be triggered manually from the Actions tab
 # (workflow_dispatch), so pull requests stay fast.
 #
-# The `expo run:ios` step can block on the simulator-launch step on CI; if a run
-# hangs, cancel it and investigate that step (build + `xcrun simctl install`
-# without launching is the usual fix).
+# We build + install with xcodebuild/simctl instead of `expo run:ios`:
+# `expo run:ios` launches the app as an Expo dev client and opens the
+# expo-development-client:// Metro deep link, which times out on CI
+# (xcrun simctl openurl, NSPOSIXErrorDomain code 60) and hangs. A Release build
+# bundles the JS, so no Metro/dev-client URL is needed and Maestro can launch the
+# installed app directly.
 on:
   push:
     branches: [main]
@@ -26,8 +29,20 @@ jobs:
       - run: npm ci
       - name: Install Maestro
         run: curl -Ls "https://get.maestro.mobile.dev" | bash
-      - name: Build & install dev client on iOS simulator
-        run: npx expo prebuild --platform ios && npx expo run:ios --configuration Debug
+      - name: Generate native project
+        run: npx expo prebuild --platform ios
+      - name: Build iOS app (Release, JS bundled) for simulator
+        run: >-
+          xcodebuild -workspace ios/evemobile.xcworkspace -scheme evemobile
+          -configuration Release -sdk iphonesimulator
+          -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath ios/build build
+      - name: Boot simulator and install app
+        run: |
+          SIM_UDID=$(xcrun simctl list devices available | grep -m1 -iE 'iphone' | awk -F'[()]' '{print $2}')
+          echo "Using simulator $SIM_UDID"
+          xcrun simctl boot "$SIM_UDID" || true
+          xcrun simctl install "$SIM_UDID" ios/build/Build/Products/Release-iphonesimulator/evemobile.app
       - name: Run Maestro flows
         run: |
           export PATH="$HOME/.maestro/bin:$PATH"
