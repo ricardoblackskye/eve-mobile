@@ -1,4 +1,4 @@
-import ChatScreen from "./ChatScreen";
+import ChatScreen from "../components/ChatScreen";
 
 export const options = { title: "Home" };
 

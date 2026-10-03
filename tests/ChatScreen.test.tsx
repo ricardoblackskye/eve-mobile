@@ -1,7 +1,7 @@
 import React from "react";
 import { render } from "@testing-library/react-native";
 import { useEveAgent } from "eve/react";
-import ChatScreen from '../src/app/ChatScreen';
+import ChatScreen from '../src/components/ChatScreen';
 
 jest.mock("eve/react", () => ({
   useEveAgent: jest.fn(),

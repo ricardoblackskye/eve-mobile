@@ -1,4 +1,4 @@
-import { getMenuItems } from '../src/app/menu';
+import { getMenuItems } from '../src/menu';
 
 describe('getMenuItems', () => {
   it('exposes a Home link and a Dark Factory link (the menu available on all pages)', () => {
