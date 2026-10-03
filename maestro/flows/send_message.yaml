@@ -1,0 +1,12 @@
+# Sends a message and asserts the user bubble appears (validates the send path).
+# No backend is required for this UI assertion — the hook appends the user
+# message optimistically on send.
+appId: com.ricardoblackskye.evemobile
+---
+- launchApp
+- tapOn:
+    id: "chat-input"
+- inputText: "Hello Eve"
+- tapOn:
+    id: "chat-send"
+- assertVisible: "Hello Eve"
