@@ -11,6 +11,11 @@ name: E2E
 # (xcrun simctl openurl, NSPOSIXErrorDomain code 60) and hangs. A Release build
 # bundles the JS, so no Metro/dev-client URL is needed and Maestro can launch the
 # installed app directly.
+#
+# Speed: a cold RN iOS Release build is 15-40 min, so we cache the CocoaPods specs
+# and the Xcode DerivedData (ios/build) keyed on the dependency set — repeat runs
+# land in minutes. CODE_SIGNING_ALLOWED=NO keeps the simulator build from needing a
+# cert/profile the runner lacks (Debug signed fine, Release otherwise may not).
 on:
   push:
     branches: [main]
@@ -26,6 +31,20 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Cache CocoaPods specs
+        uses: actions/cache@v4
+        with:
+          path: ~/.cocoapods
+          key: ${{ runner.os }}-cocoapods-${{ hashFiles('package.json', 'package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-cocoapods-
+      - name: Cache Xcode DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ios/build
+          key: ${{ runner.os }}-deriveddata-${{ hashFiles('package.json', 'package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-deriveddata-
       - run: npm ci
       - name: Install Maestro
         run: curl -Ls "https://get.maestro.mobile.dev" | bash
@@ -37,9 +56,10 @@ jobs:
           -configuration Release -sdk iphonesimulator
           -destination 'generic/platform=iOS Simulator'
           -derivedDataPath ios/build build
+          CODE_SIGNING_ALLOWED=NO
       - name: Boot simulator and install app
         run: |
-          SIM_UDID=$(xcrun simctl list devices available | grep -m1 -iE 'iphone' | awk -F'[()]' '{print $2}')
+          SIM_UDID=$(xcrun simctl list devices available | grep -iE 'iphone' | grep -oE '[0-9A-Fa-f-]{36}' | head -1)
           echo "Using simulator $SIM_UDID"
           xcrun simctl boot "$SIM_UDID" || true
           xcrun simctl install "$SIM_UDID" ios/build/Build/Products/Release-iphonesimulator/evemobile.app
