@@ -2,6 +2,9 @@ name: CI
 
 # Runs on every PR (pre-merge gate) AND on every push to main
 # (post-merge re-verification of the merged result).
+#
+# NOTE: the slow E2E (Maestro / iOS-simulator) job lives in e2e.yml so it does
+# NOT gate every PR — it runs after merge to main and can be triggered manually.
 on:
   pull_request:
     branches: [main]
@@ -32,25 +35,3 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
-
-  e2e:
-    name: E2E (Maestro, iOS simulator)
-    runs-on: macos-latest
-    # Builds a dev client on the iOS simulator and exercises the Maestro flows.
-    # This is the slowest gate and needs a built client — keep it as a separate
-    # job so lint/test stay fast.
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - name: Install Maestro
-        run: curl -Ls "https://get.maestro.mobile.dev" | bash
-      - name: Build & install dev client on iOS simulator
-        run: npx expo prebuild --platform ios && npx expo run:ios --configuration Debug
-      - name: Run Maestro flows
-        run: |
-          export PATH="$HOME/.maestro/bin:$PATH"
-          maestro test maestro/flows
